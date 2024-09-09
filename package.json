@@ -7,6 +7,7 @@
     "build": "tsc && tsc-alias",
     "eslint": "eslint src --fix",
     "format": "prettier --write '{src,tests}/**/*.ts'",
+    "run": "node --test --require ts-node/register ./src/index.ts",
     "test": "node --test --require ts-node/register ./tests/test_*.ts"
   },
   "repository": {
@@ -21,6 +22,7 @@
   "homepage": "https://github.com/isamu/ts-template#readme",
   "devDependencies": {
     "@types/node": "^22.5.0",
+    "dotenv": "^16.4.5",
     "eslint": "^9.9.0",
     "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
@@ -28,5 +30,10 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.2.0"
+  },
+  "dependencies": {
+    "@graphai/openai_agent": "^0.0.7",
+    "@graphai/vanilla": "^0.0.9",
+    "graphai": "^0.5.8"
   }
 }
