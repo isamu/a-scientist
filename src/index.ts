@@ -110,25 +110,18 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
         },
         improveTask: {
           agent: "nestedAgent",
-          inputs: { prevHistory: ":nextHistory.array" },
+          inputs: { history: ":nextHistory.array" },
           isResult: true,
           graph: {
             version: 0.5,
             loop: {
-              count: 1,
-              // count: num_reflections - 1,
+              //count: 1,
+              count: num_reflections - 1,
             },
             nodes: {
               history: {
-                value: [],
-                update: ":nextHistory2.array",
-              },
-              currentHistory: {
-                agent: "arrayFlatAgent",
-                inputs: {
-                  array: [":prevHistory", ":history"],
-                  depth: 2,
-                },
+                value: "",
+                update: ":nextHistory.array"
               },
               task2: {
                 agent: "openAIAgent",
@@ -137,7 +130,7 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
                   system: idea_system_prompt,
                 },
                 inputs: {
-                  messages: ":currentHistory.array",
+                  messages: ":history",
                 },
               },
               jsonParse: {
@@ -155,7 +148,7 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
                   ],
                 },
               },
-              nextHistory2: {
+              nextHistory: {
                 agent: "arrayFlatAgent",
                 inputs: {
                   array: [":history", ":messageData"],
@@ -163,11 +156,12 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
                 isResult: true,
               },
               debug: {
-                agent: "bypassAgent",
+                agent: (args: any) => {
+                  console.log(args);
+                },
                 inputs: [
-                  ":currentHistory",
+                  ":jsonParse",
                 ],
-                isResult: true,
               },
             },
           },
@@ -176,7 +170,7 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
     };
     const graph = new GraphAI(graph_data, agents);
     graph.onLogCallback = ({ nodeId, state, inputs, result, inputsData }) => {
-      console.log(nodeId, state, inputs, inputsData);
+      // console.log(nodeId, state, inputs, inputsData);
     };
 
     const result = (await graph.run()) as any;
