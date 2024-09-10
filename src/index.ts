@@ -8,9 +8,8 @@ import { idea_first_prompt, idea_reflection_prompt } from "./text";
 import { GraphAI } from "graphai";
 import { openAIAgent } from "@graphai/openai_agent";
 import * as vanilla_agent from "@graphai/vanilla";
-import arrayFlatAgent from "./array_flat_agent";
 
-const agents = { openAIAgent, ...vanilla_agent, arrayFlatAgent };
+const agents = { openAIAgent, ...vanilla_agent };
 
 const getBaseDir = (name: string) => {
   return path.resolve(__dirname, "../templates/" + name);
@@ -67,7 +66,8 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
     const graph_data = {
       version: 0.5,
       loop: {
-        count: 2,
+        //  count: max_num_generations,
+        count: 1,
       },
       nodes: {
         message: {
@@ -82,9 +82,10 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
           params: {
             prompt: message,
             system: idea_system_prompt,
-            messages: ":history",
           },
-          isResult: true,
+          inputs: {
+            messages: ":history",
+          }
         },
         jsonParse: {
           agent: "jsonParserAgent",
@@ -114,44 +115,70 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
           graph: {
             version: 0.5,
             loop: {
-              count: 2,
-            },
-            history: {
-              value: ":prevHistory",
-              update: ":nextHistory.array",
+              count: 1,
+              // count: num_reflections - 1,
             },
             nodes: {
+              history: {
+                value: [],
+                update: ":nextHistory2.array",
+              },
+              currentHistory: {
+                agent: "arrayFlatAgent",
+                inputs: {
+                  array: [":prevHistory", ":history"],
+                  depth: 2,
+                },
+              },
               task2: {
                 agent: "openAIAgent",
                 params: {
                   prompt: idea_reflection_prompt,
                   system: idea_system_prompt,
-                  messages: ":history",
+                },
+                inputs: {
+                  messages: ":currentHistory.array",
                 },
               },
-            },
-            messageData: {
-              agent: "stringTemplateAgent",
-              inputs: [":message", ":task2.choices.$0.message.content"],
-              params: {
-                template: [
-                  { role: "user", content: "${0}" },
-                  { role: "assistant", content: "${1}" },
+              jsonParse: {
+                agent: "jsonParserAgent",
+                inputs: [":task2.choices.$0.message.content"],
+                isResult: true,
+              },
+              messageData: {
+                agent: "stringTemplateAgent",
+                inputs: [idea_reflection_prompt, ":task2.choices.$0.message.content"],
+                params: {
+                  template: [
+                    { role: "user", content: "${0}" },
+                    { role: "assistant", content: "${1}" },
+                  ],
+                },
+              },
+              nextHistory2: {
+                agent: "arrayFlatAgent",
+                inputs: {
+                  array: [":history", ":messageData"],
+                },
+                isResult: true,
+              },
+              debug: {
+                agent: "bypassAgent",
+                inputs: [
+                  ":currentHistory",
                 ],
+                isResult: true,
               },
-            },
-            nextHistory: {
-              agent: "arrayFlatAgent",
-              inputs: {
-                array: [":history", ":messageData"],
-              },
-              isResult: true,
             },
           },
         },
       },
     };
     const graph = new GraphAI(graph_data, agents);
+    graph.onLogCallback = ({ nodeId, state, inputs, result, inputsData }) => {
+      console.log(nodeId, state, inputs, inputsData);
+    };
+
     const result = (await graph.run()) as any;
     console.log(result);
 
