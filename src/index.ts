@@ -21,7 +21,7 @@ const loadJsonFile = (fileName: string) => {
   return text;
 };
 
-const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGenerations = 20, num_reflections = 5) => {
+const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGenerations = 10, num_reflections = 5) => {
   if (skipGeneration) {
     const ideas = loadJsonFile(baseDir + "/ideas.json");
     // console.log(ideas);
@@ -47,7 +47,7 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
       nodes: {
         history: {
           value: [],
-          update: ":improveTask.nextHistory.array",
+          // update: ":improveTask.nextHistory.array",
         },
         idea_str_archive: {
           value: ideaStrArchive, // array
