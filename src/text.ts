@@ -1,13 +1,13 @@
 export const idea_first_prompt = `
-{task_description}
+\${task_description}
 <experiment.py>
-{code}
+\${code}
 </experiment.py>
 
 Here are the ideas that you have already generated:
 
 \'\'\'
-{prev_ideas_string}
+\${prev_ideas_string}
 \'\'\'
 
 Come up with the next impactful and creative idea for research experiments and directions you can feasibly investigate with the code provided.
@@ -36,10 +36,10 @@ In <JSON>, provide the new idea in JSON format with the following fields:
 
 Be cautious and realistic on your ratings.
 This JSON will be automatically parsed, so ensure the format is precise.
-You will have {num_reflections} rounds to iterate on the idea, but do not need to use them all.
+You will have \${num_reflections} rounds to iterate on the idea, but do not need to use them all.
 `;
 
-export const idea_reflection_prompt = `Round {current_round}/{num_reflections}.
+export const idea_reflection_prompt = `Round \${current_round}/\${num_reflections}.
 In your thoughts, first carefully consider the quality, novelty, and feasibility of the idea you just created.
 Include any other factors that you think are important in evaluating the idea.
 Ensure the idea is clear and concise, and the JSON is the correct format.

@@ -8,8 +8,9 @@ import { idea_first_prompt, idea_reflection_prompt } from "./text";
 import { GraphAI } from "graphai";
 import { openAIAgent } from "@graphai/openai_agent";
 import * as vanilla_agent from "@graphai/vanilla";
+import stringTemplateAgent from "./string_template_agent";
 
-const agents = { openAIAgent, ...vanilla_agent };
+const agents = { openAIAgent, ...vanilla_agent, stringTemplateAgent };
 
 const getBaseDir = (name: string) => {
   return path.resolve(__dirname, "../templates/" + name);
@@ -21,26 +22,10 @@ const loadJsonFile = (fileName: string) => {
   return text;
 };
 
-const formatString = (text: string, dataSet: Record<string, string>) => {
-  return Object.entries(dataSet).reduce((tmp, [key, value]) => {
-    return tmp.replaceAll("{" + key + "}", value);
-  }, text);
-};
-
-// const load
-
-// mock
-const get_response_from_llm = (message: string, system_message: string, llm: string, model: string, message_history: string[] = []) => {
-  const text = "";
-  const msg_history: string[] = [];
-
-  return [text, msg_history];
-};
-
 const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGenerations = 20, num_reflections = 5) => {
   if (skipGeneration) {
     const ideas = loadJsonFile(baseDir + "/ideas.json");
-    console.log(ideas);
+    // console.log(ideas);
     return ideas;
   }
 
@@ -55,37 +40,50 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
     const prev_ideas_string = ideaStrArchive.join("\n\n");
 
     console.log(`Iteration 1/${num_reflections}`);
-    const message = formatString(idea_first_prompt, {
-      task_description: prompt["task_description"],
-      code,
-      prev_ideas_string,
-      num_reflections: String(num_reflections),
-    });
-    // console.log(message);
 
     const graph_data = {
       version: 0.5,
       loop: {
-        //  count: max_num_generations,
-        count: 1,
+        // count: maxNumGenerations
+        count: 2,
       },
       nodes: {
-        message: {
-          value: message,
-        },
         history: {
           value: [],
           update: ":nextHistory.array",
         },
+        idea_str_archive: {
+          value: ideaStrArchive, // array
+          update: ":nextIdeas.array",
+        },
+        joinstr: {
+          agent: (inputs: string[]) => {
+            return inputs.join("\n\n");
+          },
+          inputs: [":idea_str_archive"],
+        },
+        ideaPrompt: {
+          agent: "stringTemplateAgent",
+          params: {
+            template: idea_first_prompt,
+          },
+          inputs: {
+            task_description: prompt["task_description"],
+            code,
+            prev_ideas_string: ":joinstr",
+            num_reflections: num_reflections,
+          },
+          isResult: true,
+        },
         task1: {
           agent: "openAIAgent",
           params: {
-            prompt: message,
+            prompt: ":ideaPrompt",
             system: idea_system_prompt,
           },
           inputs: {
             messages: ":history",
-          }
+          },
         },
         jsonParse: {
           agent: "jsonParserAgent",
@@ -94,7 +92,7 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
         },
         messageData: {
           agent: "stringTemplateAgent",
-          inputs: [":message", ":task1.choices.$0.message.content"],
+          inputs: [":ideaPrompt", ":task1.choices.$0.message.content"],
           params: {
             template: [
               { role: "user", content: "${0}" },
@@ -111,17 +109,35 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
         improveTask: {
           agent: "nestedAgent",
           inputs: { history: ":nextHistory.array" },
-          isResult: true,
+          // isResult: true,
           graph: {
             version: 0.5,
             loop: {
-              //count: 1,
-              count: num_reflections - 1,
+              count: 1,
+              // count: num_reflections - 1,
             },
             nodes: {
               history: {
                 value: "",
-                update: ":nextHistory.array"
+                update: ":nextHistory.array",
+              },
+              counter: {
+                value: 2, // j + 2, j is loop counter
+                update: ":nextCounter",
+              },
+              nextCounter: {
+                agent: "dataSumTemplateAgent",
+                inputs: [":counter", 1],
+              },
+              prompt: {
+                agent: "stringTemplateAgent",
+                params: {
+                  template: idea_reflection_prompt,
+                },
+                inputs: {
+                  current_round: [":counter"],
+                  num_reflections: num_reflections,
+                },
               },
               task2: {
                 agent: "openAIAgent",
@@ -153,17 +169,28 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
                 inputs: {
                   array: [":history", ":messageData"],
                 },
-                isResult: true,
               },
               debug: {
                 agent: (args: any) => {
-                  console.log(args);
+                  // console.log(args);
                 },
-                inputs: [
-                  ":jsonParse",
-                ],
+                inputs: [":prompt"],
               },
             },
+          },
+        },
+        resultJson: {
+          isResult: true,
+          agent: "jsonParserAgent",
+          inputs: [":improveTask.jsonParse"],
+          params: {
+            stringify: true,
+          },
+        },
+        nextIdeas: {
+          agent: "arrayFlatAgent",
+          inputs: {
+            array: [":idea_str_archive", ":resultJson"],
           },
         },
       },
@@ -174,8 +201,7 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
     };
 
     const result = (await graph.run()) as any;
-    console.log(result);
-
+    // console.log(result);
   } catch (e) {
     console.log(e);
   }
