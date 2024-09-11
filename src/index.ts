@@ -8,9 +8,8 @@ import { idea_first_prompt, idea_reflection_prompt } from "./text";
 import { GraphAI } from "graphai";
 import { openAIAgent } from "@graphai/openai_agent";
 import * as vanilla_agent from "@graphai/vanilla";
-import stringTemplateAgent from "./string_template_agent";
 
-const agents = { openAIAgent, ...vanilla_agent, stringTemplateAgent };
+const agents = { openAIAgent, ...vanilla_agent };
 
 const getBaseDir = (name: string) => {
   return path.resolve(__dirname, "../templates/" + name);
@@ -37,7 +36,6 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
   const idea_system_prompt = prompt["system"];
 
   try {
-
     console.log(`Iteration 1/${num_reflections}`);
 
     const graph_data = {
@@ -112,8 +110,8 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
           graph: {
             version: 0.5,
             loop: {
-              count: 1,
-              // count: num_reflections - 1,
+              // count: 1,
+              count: num_reflections - 1,
             },
             nodes: {
               history: {
@@ -171,9 +169,9 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
               },
               debug: {
                 agent: (args: any) => {
-                  // console.log(args);
+                  console.log(args);
                 },
-                inputs: [":prompt"],
+                inputs: {json: ":jsonParse", a: ":nextHistory", b: ":counter"},
               },
             },
           },
