@@ -1,6 +1,11 @@
 import fs from "fs";
 import path from "path";
 
+import { openAIAgent } from "@graphai/openai_agent";
+import * as vanilla_agent from "@graphai/vanilla";
+
+export const agents = { openAIAgent, ...vanilla_agent };
+
 export const getBaseDir = (name: string) => {
   return path.resolve(__dirname, "../templates/" + name);
 };
