@@ -37,7 +37,6 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
   const idea_system_prompt = prompt["system"];
 
   try {
-    const prev_ideas_string = ideaStrArchive.join("\n\n");
 
     console.log(`Iteration 1/${num_reflections}`);
 
