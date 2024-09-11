@@ -41,13 +41,13 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
     const graph_data = {
       version: 0.5,
       loop: {
-        // count: maxNumGenerations
-        count: 2,
+        count: maxNumGenerations
+        // count: 2,
       },
       nodes: {
         history: {
           value: [],
-          update: ":nextHistory.array",
+          update: ":improveTask.nextHistory.array",
         },
         idea_str_archive: {
           value: ideaStrArchive, // array
@@ -141,6 +141,7 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
                 params: {
                   prompt: idea_reflection_prompt,
                   system: idea_system_prompt,
+                  model: "gpt-4o-mini",
                 },
                 inputs: {
                   messages: ":history",
@@ -166,6 +167,7 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
                 inputs: {
                   array: [":history", ":messageData"],
                 },
+                isResult: true,
               },
               debug: {
                 agent: (args: any) => {
@@ -189,6 +191,12 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
           inputs: {
             array: [":idea_str_archive", ":resultJson"],
           },
+        },
+        debug: {
+          agent: (args: any) => {
+            console.log(args);
+          },
+          inputs: {last_history: ":improveTask.nextHistory.array"},
         },
       },
     };
