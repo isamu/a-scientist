@@ -1,5 +1,5 @@
 export const idea_first_prompt = `
-\${task_description}
+\${taskDescription}
 <experiment.py>
 \${code}
 </experiment.py>
@@ -36,10 +36,10 @@ In <JSON>, provide the new idea in JSON format with the following fields:
 
 Be cautious and realistic on your ratings.
 This JSON will be automatically parsed, so ensure the format is precise.
-You will have \${num_reflections} rounds to iterate on the idea, but do not need to use them all.
+You will have \${numReflections} rounds to iterate on the idea, but do not need to use them all.
 `;
 
-export const idea_reflection_prompt = `Round \${current_round}/\${num_reflections}.
+export const idea_reflection_prompt = `Round \${current_round}/\${numReflections}.
 In your thoughts, first carefully consider the quality, novelty, and feasibility of the idea you just created.
 Include any other factors that you think are important in evaluating the idea.
 Ensure the idea is clear and concise, and the JSON is the correct format.
