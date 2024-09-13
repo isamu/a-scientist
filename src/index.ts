@@ -30,10 +30,8 @@ const getGraphData = (
         update: ":nextIdeas.array",
       },
       joinstr: {
-        agent: (inputs: string[]) => {
-          return inputs.join("\n\n");
-        },
-        inputs: [":idea_str_archive"],
+        agent: "arrayJoinAgent",
+        inputs: { array: ":idea_str_archive" },
       },
       ideaPrompt: {
         agent: "stringTemplateAgent",
