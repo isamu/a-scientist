@@ -57,30 +57,21 @@ const getGraphData = (
         inputs: [":task1.text"],
         isResult: true,
       },
-      messageData: {
-        agent: "stringTemplateAgent",
-        inputs: [":ideaPrompt", ":task1.choices.$0.message.content"],
-        params: {
-          template: [
-            { role: "user", content: "${0}" },
-            { role: "assistant", content: "${1}" },
-          ],
-        },
-      },
       nextHistory: {
         agent: "arrayFlatAgent",
         inputs: {
-          array: [":history", ":messageData"],
+          array: [":history", [
+            { role: "user", content: ":ideaPrompt" },
+            { role: "assistant", content: ":task1.text" },
+          ]],
         },
       },
       improveTask: {
         agent: "nestedAgent",
         inputs: { history: ":nextHistory.array" },
-        // isResult: true,
         graph: {
           version: 0.5,
           loop: {
-            // count: 1,
             count: numReflections - 1,
           },
           nodes: {
