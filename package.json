@@ -32,8 +32,8 @@
     "typescript-eslint": "^8.2.0"
   },
   "dependencies": {
-    "@graphai/openai_agent": "^0.0.8",
+    "@graphai/openai_agent": "^0.0.10",
     "@graphai/vanilla": "^0.0.14",
-    "graphai": "^0.5.8"
+    "graphai": "^0.5.9"
   }
 }

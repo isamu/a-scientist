@@ -29,10 +29,6 @@ const getGraphData = (
         value: ideaStrArchive, // array
         update: ":nextIdeas.array",
       },
-      joinstr: {
-        agent: "arrayJoinAgent",
-        inputs: { array: ":idea_str_archive" },
-      },
       ideaPrompt: {
         agent: "stringTemplateAgent",
         params: {
@@ -42,7 +38,7 @@ const getGraphData = (
           taskDescription,
           code,
           numReflections,
-          prev_ideas_string: ":joinstr",
+          prev_ideas_string: ":idea_str_archive.join(,)",
         },
         isResult: true,
       },
@@ -58,7 +54,7 @@ const getGraphData = (
       },
       jsonParse: {
         agent: "jsonParserAgent",
-        inputs: [":task1.choices.$0.message.content"],
+        inputs: [":task1.text"],
         isResult: true,
       },
       messageData: {
@@ -123,23 +119,16 @@ const getGraphData = (
             },
             jsonParse: {
               agent: "jsonParserAgent",
-              inputs: [":task2.choices.$0.message.content"],
+              inputs: [":task2.text"],
               isResult: true,
-            },
-            messageData: {
-              agent: "stringTemplateAgent",
-              inputs: [":prompt", ":task2.choices.$0.message.content"],
-              params: {
-                template: [
-                  { role: "user", content: "${0}" },
-                  { role: "assistant", content: "${1}" },
-                ],
-              },
             },
             nextHistory: {
               agent: "arrayFlatAgent",
               inputs: {
-                array: [":history", ":messageData"],
+                array: [":history", [
+                  { role: "user", content: ":prompt" },
+                  { role: "assistant", content: ":task2.text" },
+                ]],
               },
               isResult: true,
             },
