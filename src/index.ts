@@ -22,9 +22,6 @@ const getGraphData = (
       // count: 2,
     },
     nodes: {
-      history: {
-        value: [],
-      },
       idea_str_archive: {
         value: ideaStrArchive, // array
         update: ":nextIdeas.array",
@@ -48,30 +45,20 @@ const getGraphData = (
           prompt: ":ideaPrompt",
           system: ideaSystemPrompt,
         },
-        inputs: {
-          messages: ":history",
-        },
       },
       jsonParse: {
         agent: "jsonParserAgent",
         inputs: { text: ":task1.text" },
         isResult: true,
       },
-      nextHistory: {
-        agent: "arrayFlatAgent",
-        inputs: {
-          array: [
-            ":history",
-            [
-              { role: "user", content: ":ideaPrompt" },
-              { role: "assistant", content: ":task1.text" },
-            ],
-          ],
-        },
-      },
       improveTask: {
         agent: "nestedAgent",
-        inputs: { history: ":nextHistory.array" },
+        inputs: {
+          history: [
+            { role: "user", content: ":ideaPrompt" },
+            { role: "assistant", content: ":task1.text" },
+          ],
+        },
         graph: {
           version: 0.5,
           loop: {
