@@ -10,7 +10,6 @@ import { GraphAI } from "graphai";
 const getGraphData = (
   maxNumGenerations: number,
   numReflections: number,
-  ideaStrArchive: string[],
   ideaSystemPrompt: string,
   taskDescription: string,
   code: string,
@@ -23,7 +22,7 @@ const getGraphData = (
     },
     nodes: {
       idea_str_archive: {
-        value: ideaStrArchive, // array
+        value: [], // array
         update: ":nextIdeas.array",
       },
       ideaPrompt: {
@@ -162,8 +161,9 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
   const prompt = loadJsonFile(baseDir + "/prompt.json");
 
   try {
-    const graphData = getGraphData(maxNumGenerations, numReflections, ideaStrArchive, prompt["system"], prompt["task_description"], code);
+    const graphData = getGraphData(maxNumGenerations, numReflections, prompt["system"], prompt["task_description"], code);
     const graph = new GraphAI(graphData, agents);
+    graph.injectValue("idea_str_archive", ideaStrArchive);
 
     const result = (await graph.run()) as any;
     console.log(result);
