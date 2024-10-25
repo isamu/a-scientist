@@ -7,12 +7,7 @@ import { getBaseDir, loadJsonFile, agents } from "./utils";
 
 import { GraphAI } from "graphai";
 
-const getGraphData = (
-  maxNumGenerations: number,
-  numReflections: number,
-  taskDescription: string,
-  code: string,
-) => {
+const getGraphData = (maxNumGenerations: number, numReflections: number) => {
   const graphData = {
     version: 0.5,
     loop: {
@@ -21,11 +16,17 @@ const getGraphData = (
     },
     nodes: {
       idea_str_archive: {
-        value: [], // array
+        value: [], // array. injectValue
         update: ":nextIdeas.array",
       },
       ideaSystemPrompt: {
-        value: "", // string
+        value: "", // string. injectValue
+      },
+      taskDescription: {
+        value: "", // string. injectValue
+      },
+      code: {
+        value: "", // string. injectValue
       },
       ideaPrompt: {
         agent: "stringTemplateAgent",
@@ -33,12 +34,13 @@ const getGraphData = (
           template: idea_first_prompt,
         },
         inputs: {
-          taskDescription,
-          code,
+          taskDescription: ":taskDescription",
+          code: ":code",
           numReflections,
           prev_ideas_string: ":idea_str_archive.join(,)",
         },
         isResult: true,
+        // console: {after: true},
       },
       task1: {
         agent: "openAIAgent",
@@ -120,7 +122,7 @@ const getGraphData = (
             },
             debug: {
               agent: (args: any) => {
-                console.log(args);
+                //console.log(args);
               },
               inputs: { json: ":jsonParse", a: ":nextHistory", b: ":counter", c: ":prompt" },
             },
@@ -143,7 +145,7 @@ const getGraphData = (
       },
       debug: {
         agent: (args: any) => {
-          console.log(args);
+          //  console.log(args);
         },
         inputs: { last_history: ":improveTask.nextHistory.array" },
       },
@@ -164,11 +166,16 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
   const prompt = loadJsonFile(baseDir + "/prompt.json");
 
   try {
-    const graphData = getGraphData(maxNumGenerations, numReflections, prompt["task_description"], code);
+    const graphData = getGraphData(maxNumGenerations, numReflections);
     const graph = new GraphAI(graphData, agents);
     graph.injectValue("idea_str_archive", ideaStrArchive);
     graph.injectValue("ideaSystemPrompt", prompt["system"]);
+    graph.injectValue("taskDescription", prompt["task_description"]);
+    graph.injectValue("code", code);
 
+    graph.onLogCallback = ({ nodeId, state, inputs }) => {
+      console.log(nodeId, state, inputs);
+    };
     const result = (await graph.run()) as any;
     console.log(result);
   } catch (e) {
