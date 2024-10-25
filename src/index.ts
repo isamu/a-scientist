@@ -54,16 +54,19 @@ const getGraphData = (
       },
       jsonParse: {
         agent: "jsonParserAgent",
-        inputs: [":task1.text"],
+        inputs: { text: ":task1.text" },
         isResult: true,
       },
       nextHistory: {
         agent: "arrayFlatAgent",
         inputs: {
-          array: [":history", [
-            { role: "user", content: ":ideaPrompt" },
-            { role: "assistant", content: ":task1.text" },
-          ]],
+          array: [
+            ":history",
+            [
+              { role: "user", content: ":ideaPrompt" },
+              { role: "assistant", content: ":task1.text" },
+            ],
+          ],
         },
       },
       improveTask: {
@@ -85,7 +88,7 @@ const getGraphData = (
             },
             nextCounter: {
               agent: "dataSumTemplateAgent",
-              inputs: [":counter", 1],
+              inputs: { array: [":counter", 1] },
             },
             prompt: {
               agent: "stringTemplateAgent",
@@ -110,16 +113,19 @@ const getGraphData = (
             },
             jsonParse: {
               agent: "jsonParserAgent",
-              inputs: [":task2.text"],
+              inputs: { text: ":task2.text" },
               isResult: true,
             },
             nextHistory: {
               agent: "arrayFlatAgent",
               inputs: {
-                array: [":history", [
-                  { role: "user", content: ":prompt" },
-                  { role: "assistant", content: ":task2.text" },
-                ]],
+                array: [
+                  ":history",
+                  [
+                    { role: "user", content: ":prompt" },
+                    { role: "assistant", content: ":task2.text" },
+                  ],
+                ],
               },
               isResult: true,
             },
@@ -135,7 +141,7 @@ const getGraphData = (
       resultJson: {
         isResult: true,
         agent: "jsonParserAgent",
-        inputs: [":improveTask.jsonParse"],
+        inputs: { data: ":improveTask.jsonParse" },
         params: {
           stringify: true,
         },

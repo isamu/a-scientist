@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@graphai/openai_agent": "^0.0.10",
-    "@graphai/vanilla": "^0.0.14",
+    "@graphai/vanilla": "^0.1.0",
     "graphai": "^0.5.9"
   }
 }
