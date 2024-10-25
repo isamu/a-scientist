@@ -40,7 +40,6 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
           prev_ideas_string: ":idea_str_archive.join(,)",
         },
         isResult: true,
-        // console: {after: true},
       },
       task1: {
         agent: "openAIAgent",
@@ -50,7 +49,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
         },
       },
       jsonParse: {
-        agent: "jsonParserAgent",
+        agent: "jsonParserAgent", // just for data validate
         inputs: { text: ":task1.text" },
         isResult: true,
       },
@@ -122,7 +121,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
             },
             debug: {
               agent: (args: any) => {
-                //console.log(args);
+                console.log(args);
               },
               inputs: { json: ":jsonParse", a: ":nextHistory", b: ":counter", c: ":prompt" },
             },
@@ -145,7 +144,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
       },
       debug: {
         agent: (args: any) => {
-          //  console.log(args);
+          console.log(args);
         },
         inputs: { last_history: ":improveTask.nextHistory.array" },
       },
