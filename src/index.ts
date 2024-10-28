@@ -95,10 +95,6 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
               inputs: {
                 messages: ":history",
               },
-            },
-            jsonParse: {
-              agent: "jsonParserAgent", // just for data validate
-              inputs: { text: ":task2.text" },
               isResult: true,
             },
             nextHistory: {
@@ -112,33 +108,20 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
               },
               isResult: true,
             },
-            debug: {
-              agent: "copyAgent",
-              console: {after: true},
-              inputs: { json: ":jsonParse", a: ":nextHistory", b: ":counter", c: ":prompt" },
-            },
           },
-        },
-      },
-      resultJson: {
-        isResult: true,
-        agent: "jsonParserAgent",
-        inputs: { data: ":improveTask.jsonParse" },
-        params: {
-          stringify: true,
         },
       },
       nextIdeas: {
         agent: "pushAgent",
         inputs: {
           array: ":idea_str_archive",
-          item: ":resultJson",
+          item: ":improveTask.task2.text.codeBlock()",
         },
       },
       debug: {
         agent: "copyAgent",
         console: {after: true},
-        inputs: { last_history: ":improveTask.nextHistory.array" },
+        inputs: { last_history: ":improveTask.nextHistory" },
       },
     },
   };

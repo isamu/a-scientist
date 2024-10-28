@@ -34,6 +34,6 @@
   "dependencies": {
     "@graphai/openai_agent": "^0.0.10",
     "@graphai/vanilla": "^0.1.3",
-    "graphai": "^0.5.13"
+    "graphai": "^0.5.14"
   }
 }

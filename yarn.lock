@@ -705,10 +705,10 @@ globby@^11.0.4, globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
-graphai@^0.5.13:
-  version "0.5.13"
-  resolved "https://registry.yarnpkg.com/graphai/-/graphai-0.5.13.tgz#7aab45c4bb26a05fa38897c4e6adf7f3cc1a622e"
-  integrity sha512-uNRJVemeB8juF1xTqb1ITBQg0AEw9iADSgseOGE0AoqB71CHOpHZz4TpEXzuzr82E1Jb+klUGS0N+6I1RYrDfg==
+graphai@^0.5.14:
+  version "0.5.14"
+  resolved "https://registry.yarnpkg.com/graphai/-/graphai-0.5.14.tgz#1ef3b8c92edba5234d0f84eb32b9b7f6a77a86bd"
+  integrity sha512-OyUl0Jc2+/A+8g6TfgpmhejT13/P2pS/dcu21k6im5hsfsali1XzCcNdyU2/vtX/wued9J4KD1nAyj2Ap2+s3A==
 
 graphemer@^1.4.0:
   version "1.4.0"
