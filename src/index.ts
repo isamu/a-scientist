@@ -16,7 +16,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
     nodes: {
       idea_str_archive: {
         value: [], // array. injectValue
-        update: ":nextIdeas.array",
+        update: ":nextIdeas",
       },
       ideaSystemPrompt: {
         value: "", // string. injectValue
@@ -69,7 +69,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
           nodes: {
             history: {
               value: "",
-              update: ":nextHistory.array",
+              update: ":nextHistory",
             },
             counter: {
               value: 2, // j + 2, j is loop counter
@@ -102,14 +102,12 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
               isResult: true,
             },
             nextHistory: {
-              agent: "arrayFlatAgent",
+              agent: "pushAgent",
               inputs: {
-                array: [
-                  ":history",
-                  [
-                    { role: "user", content: ":prompt" },
-                    { role: "assistant", content: ":task2.text" },
-                  ],
+                array: ":history",
+                items: [
+                  { role: "user", content: ":prompt" },
+                  { role: "assistant", content: ":task2.text" },
                 ],
               },
               isResult: true,
@@ -131,9 +129,10 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
         },
       },
       nextIdeas: {
-        agent: "arrayFlatAgent",
+        agent: "pushAgent",
         inputs: {
-          array: [":idea_str_archive", ":resultJson"],
+          array: ":idea_str_archive",
+          item: ":resultJson",
         },
       },
       debug: {
