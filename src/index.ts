@@ -12,7 +12,6 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
     version: 0.5,
     loop: {
       count: maxNumGenerations,
-      // count: 2,
     },
     nodes: {
       idea_str_archive: {
@@ -74,11 +73,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
             },
             counter: {
               value: 2, // j + 2, j is loop counter
-              update: ":nextCounter",
-            },
-            nextCounter: {
-              agent: "dataSumTemplateAgent",
-              inputs: { array: [":counter", 1] },
+              update: ":counter.add(1)",
             },
             prompt: {
               agent: "stringTemplateAgent",
@@ -102,7 +97,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
               },
             },
             jsonParse: {
-              agent: "jsonParserAgent",
+              agent: "jsonParserAgent", // just for data validate
               inputs: { text: ":task2.text" },
               isResult: true,
             },
@@ -120,9 +115,8 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
               isResult: true,
             },
             debug: {
-              agent: (args: any) => {
-                console.log(args);
-              },
+              agent: "copyAgent",
+              console: {after: true},
               inputs: { json: ":jsonParse", a: ":nextHistory", b: ":counter", c: ":prompt" },
             },
           },
@@ -143,9 +137,8 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
         },
       },
       debug: {
-        agent: (args: any) => {
-          console.log(args);
-        },
+        agent: "copyAgent",
+        console: {after: true},
         inputs: { last_history: ":improveTask.nextHistory.array" },
       },
     },

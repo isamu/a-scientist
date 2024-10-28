@@ -74,10 +74,10 @@
     openai "^4.62.1"
     tiktoken "^1.0.16"
 
-"@graphai/vanilla@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@graphai/vanilla/-/vanilla-0.1.0.tgz#8e6e7a58724d5b0a63c4d1969c5596c0811deaac"
-  integrity sha512-WdG6nUPiOp8AdJfGAvF8oqHuH4ptiYuumd+cVBRHaitRz9ztfbMDxH4ktMfdOVsmwOBS0mAANCmTuUo1L9BfBg==
+"@graphai/vanilla@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@graphai/vanilla/-/vanilla-0.1.3.tgz#71e23f284de994c0437494d54f3dc5d0b1a22302"
+  integrity sha512-H+gOs6c6xjP8The8uBp5lpbWIpFTxqA3lvtnw+kxz6yfGVzx3x+CAFbYNQT47459ZU4F2CIdlPxjXL7h9QD2ag==
   dependencies:
     "@graphai/agent_utils" "0.0.2"
 
@@ -705,10 +705,10 @@ globby@^11.0.4, globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
-graphai@^0.5.9:
-  version "0.5.9"
-  resolved "https://registry.yarnpkg.com/graphai/-/graphai-0.5.9.tgz#a8757404e037ab12f7954290a8a6fd76eaf765b9"
-  integrity sha512-dGBv394xt6o/fXlosuxoLyw75/1CCayNCcekt1yM8bixDPq4OFP3daqIfqIrp5i4zCiRWT2x6yMru26a8LiG5Q==
+graphai@^0.5.13:
+  version "0.5.13"
+  resolved "https://registry.yarnpkg.com/graphai/-/graphai-0.5.13.tgz#7aab45c4bb26a05fa38897c4e6adf7f3cc1a622e"
+  integrity sha512-uNRJVemeB8juF1xTqb1ITBQg0AEw9iADSgseOGE0AoqB71CHOpHZz4TpEXzuzr82E1Jb+klUGS0N+6I1RYrDfg==
 
 graphemer@^1.4.0:
   version "1.4.0"
