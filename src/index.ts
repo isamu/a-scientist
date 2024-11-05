@@ -69,7 +69,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
           nodes: {
             history: {
               value: "",
-              update: ":nextHistory",
+              update: ":task2.messages",
             },
             counter: {
               value: 2, // j + 2, j is loop counter
@@ -88,23 +88,12 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
             task2: {
               agent: "openAIAgent",
               params: {
-                prompt: ":prompt",
                 system: ":ideaSystemPrompt",
                 model: "gpt-4o-mini",
               },
               inputs: {
                 messages: ":history",
-              },
-              isResult: true,
-            },
-            nextHistory: {
-              agent: "pushAgent",
-              inputs: {
-                array: ":history",
-                items: [
-                  { role: "user", content: ":prompt" },
-                  { role: "assistant", content: ":task2.text" },
-                ],
+                prompt: ":prompt",
               },
               isResult: true,
             },
