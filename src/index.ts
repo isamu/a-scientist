@@ -16,7 +16,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
     nodes: {
       idea_str_archive: {
         value: [], // array. injectValue
-        update: ":nextIdeas",
+        update: ":nextIdeas.array",
       },
       ideaSystemPrompt: {
         value: "", // string. injectValue
