@@ -38,7 +38,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
           numReflections,
           prev_ideas_string: ":idea_str_archive.join(,)",
         },
-        isResult: true,
+        // isResult: true,
       },
       task1: {
         agent: "openAIAgent",
@@ -50,7 +50,7 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
       jsonParse: {
         agent: "jsonParserAgent", // just for data validate
         inputs: { text: ":task1.text" },
-        isResult: true,
+        // isResult: true,
       },
       improveTask: {
         agent: "nestedAgent",
@@ -109,14 +109,16 @@ const getGraphData = (maxNumGenerations: number, numReflections: number) => {
       },
       debug: {
         agent: "copyAgent",
-        console: {after: true},
-        inputs: { last_history: ":improveTask.nextHistory" },
+        isResult: true,
+        // console: {after: true},
+        inputs: { last_history: ":improveTask.task2" },
       },
     },
   };
   return graphData;
 };
 
+//const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGenerations = 1, numReflections = 1) => {
 const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGenerations = 10, numReflections = 5) => {
   if (skipGeneration) {
     const ideas = loadJsonFile(baseDir + "/ideas.json");
@@ -140,7 +142,7 @@ const generate_ideas = async (baseDir: string, skipGeneration = false, maxNumGen
       console.log(nodeId, state, inputs);
     };
     const result = (await graph.run()) as any;
-    console.log(result);
+    console.log(JSON.stringify(result, null, 2));
   } catch (e) {
     console.log(e);
   }
